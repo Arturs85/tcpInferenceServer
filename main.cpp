@@ -11,6 +11,7 @@
 
 int main(int argc, const char* argv[]) {
 
+    std::cout<<"date and time: "<<TcpServer::currentDateTime()<<std::endl;
     TcpServer tcpServer;
     Inference inference;
     tcpServer.inference = &inference;

@@ -44,6 +44,7 @@ public:
     void receive();
     void startReadingThread();
     TcpServer();
+    static const std::string currentDateTime();
 };
 
 #endif // TCPSERVER_HPP

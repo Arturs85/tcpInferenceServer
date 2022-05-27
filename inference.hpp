@@ -36,7 +36,8 @@ public:
   Inference();
   torch::Tensor read_image(const cv::Mat src);
   torch::jit::script::Module module;
-bool wasValidImageData = true;
+  bool wasValidImageData = true;
+  std::string makeLocationsString(std::vector<Detection> detections);
 };
 
 #endif // INFERENCE_HPP

@@ -4,8 +4,12 @@
 #include <iostream>
 #include <thread>
 #include "inference.hpp"
+#include <time.h>
+
 #define SA struct sockaddr
 const std::string TcpServer::TAG = "[tcpServer] ";
+
+
 
 TcpServer::TcpServer(){
     //inference = new Inference();
@@ -170,6 +174,20 @@ void TcpServer::receive(){
 
 
     }
+}
+
+
+// Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+const std::string TcpServer::currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%dT%XZ", &tstruct);
+
+    return buf;
 }
 
 void TcpServer::handlerSigpipe(int s){

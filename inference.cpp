@@ -9,7 +9,7 @@
 #include <bits/stdc++.h>
 #include "inference.hpp" 
 #include "uicom.hpp"
-
+#include <sstream>
 
 // Returns Total Area  of two overlap
 // rectangles
@@ -85,7 +85,7 @@ std::vector<Detection> Inference::infere(int len, const char* bytes) {
     for (int i = 0; i < output.sizes().at(1); ++i) { //tresholding by confidence
 
         torch::Tensor det0 = det[i];
-        if( !std::isnan( det0[0].item<double>()) && det0[5].item<double>() > 0.1 ){
+        if( !std::isnan( det0[0].item<double>()) && det0[5].item<double>() > 0.3 ){
 
             std::cout<<det0[0].item<double>()<<" "<<det0[1].item<double>()<<" "<<det0[2].item<double>()<<" "<<det0[3].item<double>()<<" "<<det0[4].item<double>()<<" "<<det0[5].item<double>()<<" "<<std::endl;
 
@@ -127,7 +127,8 @@ std::vector<Detection> Inference::infere(int len, const char* bytes) {
 
     std::cout<<"done, found : "<<detections.size()<<std::endl;
 
-    UiCom::sendCount(detections.size());
+    // UiCom::sendCount(detections.size());
+    UiCom::sendLocations(makeLocationsString(detections));
     return detections;
 }
 
@@ -201,7 +202,7 @@ torch::Tensor  Inference::read_image(const cv::Mat src)
     //        cv::cvtColor(img, img, cv::COLOR_GRAY2RGB);
     //    else
     //        cv::cvtColor(img, img, cv::COLOR_BGR2RGB);
-cv::Mat img;
+    cv::Mat img;
     src.convertTo( img, CV_32FC3, 1/255.0 );
     //   cv::imshow("image2", img);
     //cv::waitKey(0);
@@ -230,4 +231,20 @@ cv::Mat  Inference::crop_center(const cv::Mat &img)
     const cv::Rect roi(offsetW, offsetH, cropSize, cropSize);
 
     return img(roi);
+}
+std::string Inference::makeLocationsString(    std::vector<Detection> detections){
+    std::string start = "{\"mapValue\": {\"fields\": {\"xCord\": {\"integerValue\": \"";
+    std::string mid = "\"},\"yCord\": {\"integerValue\": \"";
+
+    std::string end = "\"}}}}";
+
+    std::stringstream ss;
+
+    for (int i = 0; i < detections.size(); ++i) {
+        ss<<start<<(int)detections.at(i).x<<mid<<(int)detections.at(i).y<<end;
+        if(i<detections.size()-1) ss<<",";
+
+    }
+
+    return ss.str();
 }
